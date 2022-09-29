@@ -62,7 +62,7 @@ intents.message_content = True
 intents.presences = True
 """
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 
 """
 Uncomment this if you don't want to use prefix (normal) commands.
@@ -115,7 +115,7 @@ async def status_task() -> None:
     """
     Setup the game status task of the bot
     """
-    statuses = ["C'est trivial !", "MP2I Suprémacie"]
+    statuses = ["C'est trivial !", "MP2I Suprémacie", "42", "Hacking math's DM answers", "++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>+++++++.+++.<++++++++++++++++++++.>-------."]
     await bot.change_presence(activity=discord.Game(random.choice(statuses)))
 
 

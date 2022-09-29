@@ -10,7 +10,6 @@ import random
 
 import aiohttp
 import discord
-from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -109,7 +108,7 @@ class Fun(commands.Cog, name="fun"):
         """
         # This will prevent your bot from stopping everything when doing a web request - see: https://discordpy.readthedocs.io/en/stable/faq.html#how-do-i-make-a-web-request
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://uselessfacts.jsph.pl/random.json?language=en") as request:
+            async with session.get("https://uselessfacts.jsph.pl/random.json?language=fr") as request:
                 if request.status == 200:
                     data = await request.json()
                     embed = discord.Embed(
