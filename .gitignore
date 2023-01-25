@@ -128,8 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Bot token
-TOKEN
+# ChatGPT token
+TOKEN.txt
 
 # Config file
 config.json

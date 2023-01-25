@@ -16,6 +16,9 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 from helpers import checks
+from helpers.chat_gpt_core import Predictor
+
+gpt_predictor = Predictor()
 
 
 class General(commands.Cog, name="general"):
@@ -26,9 +29,11 @@ class General(commands.Cog, name="general"):
         name="help",
         description="List all commands the bot has loaded."
     )
+    @checks.not_blacklisted()
     async def help(self, context: Context) -> None:
         prefix = self.bot.config["prefix"]
-        embed = discord.Embed(title="Help", description="List of available commands:", color=0x9C84EF)
+        embed = discord.Embed(
+            title="Help", description="List of available commands:", color=0x9C84EF)
         for i in self.bot.cogs:
             cog = self.bot.get_cog(i.lower())
             commands = cog.get_commands()
@@ -37,7 +42,8 @@ class General(commands.Cog, name="general"):
                 description = command.description.partition('\n')[0]
                 data.append(f"{prefix}{command.name} - {description}")
             help_text = "\n".join(data)
-            embed.add_field(name=i.capitalize(), value=f'```{help_text}```', inline=False)
+            embed.add_field(name=i.capitalize(),
+                            value=f'```{help_text}```', inline=False)
         await context.send(embed=embed)
 
     @commands.hybrid_command(
@@ -48,11 +54,10 @@ class General(commands.Cog, name="general"):
     async def botinfo(self, context: Context) -> None:
         """
         Get some useful (or not) information about the bot.
-        
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
-            description="Used [Krypton's](https://krypton.ninja) template",
+            description="Bot du discord MP2I / MPI Champollion",
             color=0x9C84EF
         )
         embed.set_author(
@@ -86,7 +91,6 @@ class General(commands.Cog, name="general"):
     async def serverinfo(self, context: Context) -> None:
         """
         Get some useful (or not) information about the server.
-        
         :param context: The hybrid command context.
         """
         roles = [role.name for role in context.guild.roles]
@@ -100,7 +104,7 @@ class General(commands.Cog, name="general"):
             description=f"{context.guild}",
             color=0x9C84EF
         )
-        if context.guild.icon is not None:            
+        if context.guild.icon is not None:
             embed.set_thumbnail(
                 url=context.guild.icon.url
             )
@@ -133,7 +137,6 @@ class General(commands.Cog, name="general"):
     async def ping(self, context: Context) -> None:
         """
         Check if the bot is alive.
-        
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
@@ -151,7 +154,6 @@ class General(commands.Cog, name="general"):
     async def invite(self, context: Context) -> None:
         """
         Get the invite link of the bot to be able to invite it.
-        
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
@@ -173,7 +175,6 @@ class General(commands.Cog, name="general"):
     async def server(self, context: Context) -> None:
         """
         Get the invite link of the discord server of the bot for some support.
-        
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
@@ -195,7 +196,6 @@ class General(commands.Cog, name="general"):
     async def eight_ball(self, context: Context, *, question: str) -> None:
         """
         Ask any question to the bot.
-        
         :param context: The hybrid command context.
         :param question: The question that should be asked by the user.
         """
@@ -222,7 +222,6 @@ class General(commands.Cog, name="general"):
     async def bitcoin(self, context: Context) -> None:
         """
         Get the current price of bitcoin.
-        
         :param context: The hybrid command context.
         """
         # This will prevent your bot from stopping everything when doing a web request - see: https://discordpy.readthedocs.io/en/stable/faq.html#how-do-i-make-a-web-request
@@ -243,6 +242,28 @@ class General(commands.Cog, name="general"):
                         color=0xE02B2B
                     )
                 await context.send(embed=embed)
+
+    @commands.hybrid_command(
+        name="askgpt",
+        description="Asks any question to ChatGPT.",
+    )
+    @checks.not_blacklisted()
+    @app_commands.describe(question="The question you want to ask.")
+    async def askgpt(self, context: Context, *, question: str):
+        """
+        Asks ChatGPT any question
+
+        :param context: The application command context.
+        """
+        embed = discord.Embed(
+            title=f"**{question} :**",
+            description=f"{gpt_predictor.predict(question)}",
+            color=0x9C84EF
+        )
+        # embed.set_footer(
+        #     text=f"The question was: {question}"
+        # )
+        await context.send(embed=embed)
 
 
 async def setup(bot):
